@@ -1,4 +1,5 @@
 import React from 'react';
+import {Check, X} from 'lucide-react';
 import './ApplicationTracker.css';
 
 export interface ApplicationStep {
@@ -47,8 +48,8 @@ export const ApplicationTracker: React.FC<ApplicationTrackerProps> = ({
         <React.Fragment key={step.key}>
           <div className={`app-tracker__step app-tracker__step--${state}`}>
             <div className="app-tracker__circle">
-              {state === 'completed' && <CheckIcon />}
-              {state === 'failed' && <XIcon />}
+              {state === 'completed' && <Check size={12}/>}
+              {state === 'failed' && <X size={12} />}
               {(state === 'active' || state === 'pending') && (
                 <span className="app-tracker__num">{i + 1}</span>
               )}
@@ -68,17 +69,4 @@ export const ApplicationTracker: React.FC<ApplicationTrackerProps> = ({
       );
     })}
   </div>
-);
-
-const CheckIcon = () => (
-  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-    <polyline points="20 6 9 17 4 12" />
-  </svg>
-);
-
-const XIcon = () => (
-  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-    <line x1="18" y1="6" x2="6" y2="18" />
-    <line x1="6" y1="6" x2="18" y2="18" />
-  </svg>
 );

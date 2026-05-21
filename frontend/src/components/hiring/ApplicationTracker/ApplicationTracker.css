@@ -1,0 +1,111 @@
+/* Horizontal layout */
+.app-tracker--horizontal {
+  display: flex;
+  align-items: flex-start;
+}
+
+.app-tracker--horizontal .app-tracker__step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  flex: 1;
+  min-width: 0;
+}
+
+.app-tracker--horizontal .app-tracker__info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  margin-top: 8px;
+}
+
+.app-tracker--horizontal .app-tracker__line {
+  flex: 1;
+  height: 2px;
+  margin-top: 15px;
+}
+
+/* Vertical layout */
+.app-tracker--vertical {
+  display: flex;
+  flex-direction: column;
+}
+
+.app-tracker--vertical .app-tracker__step {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.app-tracker--vertical .app-tracker__info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-bottom: 4px;
+}
+
+.app-tracker--vertical .app-tracker__line {
+  width: 2px;
+  flex: 1;
+  min-height: 24px;
+  margin-left: 14px;
+}
+
+/* Circle */
+.app-tracker__circle {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--border);
+  background: var(--bg);
+  flex-shrink: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.app-tracker__step--completed .app-tracker__circle {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.app-tracker__step--active .app-tracker__circle {
+  border-color: var(--accent);
+  color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-bg);
+}
+
+.app-tracker__step--failed .app-tracker__circle {
+  background: #ef4444;
+  border-color: #ef4444;
+  color: #fff;
+}
+
+/* Line */
+.app-tracker__line { background: var(--border); }
+.app-tracker__line--done { background: var(--accent); }
+
+/* Text */
+.app-tracker__num { font-size: 12px; font-weight: 700; }
+
+.app-tracker__label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-h);
+}
+
+.app-tracker__step--pending .app-tracker__label { color: var(--text); font-weight: 400; }
+
+.app-tracker__desc,
+.app-tracker__date {
+  font-size: 12px;
+  color: var(--text);
+}

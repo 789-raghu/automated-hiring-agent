@@ -1,0 +1,21 @@
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.spinner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.spinner__ring {
+  display: block;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  animation: spin 0.7s linear infinite;
+}
+
+.spinner--sm .spinner__ring { width: 14px; height: 14px; }
+.spinner--md .spinner__ring { width: 22px; height: 22px; border-width: 2.5px; }
+.spinner--lg .spinner__ring { width: 36px; height: 36px; border-width: 3px; }

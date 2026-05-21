@@ -1,0 +1,99 @@
+.toast-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 360px;
+  width: calc(100vw - 40px);
+  pointer-events: none;
+}
+
+.toast {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 10px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  pointer-events: all;
+  animation: toast-in 0.2s ease forwards;
+}
+
+.toast--exiting {
+  animation: toast-out 0.2s ease forwards;
+}
+
+@keyframes toast-in {
+  from { opacity: 0; transform: translateX(16px) scale(0.97); }
+  to   { opacity: 1; transform: translateX(0)    scale(1); }
+}
+
+@keyframes toast-out {
+  from { opacity: 1; transform: translateX(0)    scale(1); }
+  to   { opacity: 0; transform: translateX(16px) scale(0.97); }
+}
+
+.toast__icon {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1px;
+}
+
+.toast--success .toast__icon { background: #dcfce7; color: #16a34a; }
+.toast--error   .toast__icon { background: #fee2e2; color: #dc2626; }
+.toast--warning .toast__icon { background: #fef9c3; color: #ca8a04; }
+.toast--info    .toast__icon { background: var(--accent-bg); color: var(--accent); }
+
+.toast__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.toast__title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-h);
+  margin: 0 0 2px;
+  line-height: 1.35;
+}
+
+.toast__message {
+  font-size: 13px;
+  color: var(--text);
+  margin: 0;
+  line-height: 1.45;
+}
+
+.toast__close {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  padding: 4px;
+  color: var(--text);
+  cursor: pointer;
+  opacity: 0.5;
+  transition: opacity 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  margin-top: 1px;
+}
+
+.toast__close:hover { opacity: 1; }
+
+@media (prefers-color-scheme: dark) {
+  .toast--success .toast__icon { background: rgba(22, 163, 74, 0.2); }
+  .toast--error   .toast__icon { background: rgba(220, 38, 38, 0.2); }
+  .toast--warning .toast__icon { background: rgba(202, 138, 4, 0.2); }
+}

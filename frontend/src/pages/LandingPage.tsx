@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import './LandingPage.css';
-import { Button } from '../components/common/Button/Button';
-import { Badge } from '../components/common/Badge/Badge';
-import { Avatar } from '../components/common/Avatar/Avatar';
-import { ScoreRing } from '../components/hiring/ScoreRing/ScoreRing';
-import { AgentStatus } from '../components/hiring/AgentStatus/AgentStatus';
-import type { AgentLog } from '../components/hiring/AgentStatus/AgentStatus';
+import { Button } from '../../ui_library/src/components/common/Button/Button';
+import { Badge } from '../../ui_library/src/components/common/Badge/Badge';
+import { Avatar } from '../../ui_library/src/components/common/Avatar/Avatar';
+import { ScoreRing } from '../../ui_library/src/components/hiring/ScoreRing/ScoreRing';
+import { AgentStatus } from '../../ui_library/src/components/hiring/AgentStatus/AgentStatus';
+import type { AgentLog } from '../../ui_library/src/components/hiring/AgentStatus/AgentStatus';
 
 // ─── Nav ─────────────────────────────────────────────────────────────────────
 
@@ -49,9 +49,9 @@ const AGENT_LOGS: AgentLog[] = [
 ];
 
 const HERO_CANDIDATES = [
-  { name: 'Priya Sharma',   role: 'Frontend Engineer',    score: 93 },
-  { name: 'Marcus Johnson', role: 'Full Stack Developer',  score: 87 },
-  { name: 'Aisha Patel',    role: 'UI Engineer',           score: 81 },
+  { name: 'Priya Sharma', role: 'Frontend Engineer', score: 93 },
+  { name: 'Marcus Johnson', role: 'Full Stack Developer', score: 87 },
+  { name: 'Aisha Patel', role: 'UI Engineer', score: 81 },
 ];
 
 const Hero: React.FC<{ onDemo: () => void }> = ({ onDemo }) => (
@@ -115,9 +115,9 @@ const Hero: React.FC<{ onDemo: () => void }> = ({ onDemo }) => (
 // ─── Stats ────────────────────────────────────────────────────────────────────
 
 const STATS = [
-  { value: '10×',  label: 'faster time-to-hire' },
-  { value: '94%',  label: 'screening accuracy' },
-  { value: '80%',  label: 'reduction in recruiter hours' },
+  { value: '10×', label: 'faster time-to-hire' },
+  { value: '94%', label: 'screening accuracy' },
+  { value: '80%', label: 'reduction in recruiter hours' },
   { value: '3.2×', label: 'more diverse shortlists' },
 ];
 
@@ -381,7 +381,7 @@ function RankIcon() {
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
       <line x1="18" y1="20" x2="18" y2="10" />
       <line x1="12" y1="20" x2="12" y2="4" />
-      <line x1="6"  y1="20" x2="6"  y2="14" />
+      <line x1="6" y1="20" x2="6" y2="14" />
     </svg>
   );
 }
@@ -390,8 +390,8 @@ function CalendarIcon() {
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
       <rect x="3" y="4" width="18" height="18" rx="2" />
       <line x1="16" y1="2" x2="16" y2="6" />
-      <line x1="8"  y1="2" x2="8"  y2="6" />
-      <line x1="3"  y1="10" x2="21" y2="10" />
+      <line x1="8" y1="2" x2="8" y2="6" />
+      <line x1="3" y1="10" x2="21" y2="10" />
     </svg>
   );
 }
@@ -415,8 +415,8 @@ function ChartIcon() {
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
       <line x1="18" y1="20" x2="18" y2="10" />
       <line x1="12" y1="20" x2="12" y2="4" />
-      <line x1="6"  y1="20" x2="6"  y2="14" />
-      <line x1="2"  y1="20" x2="22" y2="20" />
+      <line x1="6" y1="20" x2="6" y2="14" />
+      <line x1="2" y1="20" x2="22" y2="20" />
     </svg>
   );
 }

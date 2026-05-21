@@ -1,18 +1,19 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './AuthPage.css';
-import { Tabs } from '../components/common/Tabs/Tabs';
-import { Input } from '../components/common/Input/Input';
-import { Button } from '../components/common/Button/Button';
-import { useToast } from '../components/common/Toast/Toast';
+import { Tabs } from '../../ui_library/src/components/common/Tabs/Tabs';
+import { Input } from '../../ui_library/src/components/common/Input/Input';
+import { Button } from '../../ui_library/src/components/common/Button/Button';
+import { useToast } from '../../ui_library/src/components/common/Toast/Toast';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 type UserType = 'company' | 'employee';
 type AuthMode = 'login' | 'signup';
 
-interface CompanyLoginFields  { email: string; password: string }
+interface CompanyLoginFields { email: string; password: string }
 interface CompanySignupFields { companyName: string; industry: string; email: string; password: string; confirmPassword: string }
-interface EmployeeLoginFields  { email: string; password: string }
+interface EmployeeLoginFields { email: string; password: string }
 interface EmployeeSignupFields { fullName: string; email: string; jobTitle: string; password: string; confirmPassword: string }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -348,11 +349,12 @@ const EmployeeSignup: React.FC<{ onSwitch: () => void }> = ({ onSwitch }) => {
 // ─── Auth Page ────────────────────────────────────────────────────────────────
 
 const USER_TABS = [
-  { key: 'company',  label: 'For Companies', icon: <BuildingIcon /> },
-  { key: 'employee', label: 'For Employees',  icon: <PersonIcon /> },
+  { key: 'company', label: 'For Companies', icon: <BuildingIcon /> },
+  { key: 'employee', label: 'For Employees', icon: <PersonIcon /> },
 ];
 
-export const AuthPage: React.FC<{ onBack: () => void }> = ({ onBack }) => {
+export const AuthPage: React.FC = () => {
+  const navigate = useNavigate();
   const [userType, setUserType] = useState<UserType>('company');
   const [mode, setMode] = useState<AuthMode>('login');
 
@@ -396,14 +398,14 @@ export const AuthPage: React.FC<{ onBack: () => void }> = ({ onBack }) => {
 
         {/* Forms */}
         <div className="auth-form-area">
-          {userType === 'company' && mode === 'login'  && <CompanyLogin   onSwitch={() => setMode('signup')} />}
-          {userType === 'company' && mode === 'signup' && <CompanySignup  onSwitch={() => setMode('login')} />}
-          {userType === 'employee' && mode === 'login'  && <EmployeeLogin  onSwitch={() => setMode('signup')} />}
+          {userType === 'company' && mode === 'login' && <CompanyLogin onSwitch={() => setMode('signup')} />}
+          {userType === 'company' && mode === 'signup' && <CompanySignup onSwitch={() => setMode('login')} />}
+          {userType === 'employee' && mode === 'login' && <EmployeeLogin onSwitch={() => setMode('signup')} />}
           {userType === 'employee' && mode === 'signup' && <EmployeeSignup onSwitch={() => setMode('login')} />}
         </div>
 
         {/* Back link */}
-        <button type="button" className="auth-back" onClick={onBack}>
+        <button type="button" className="auth-back" onClick={() => navigate('/')}>
           <ArrowLeftIcon /> Back to home
         </button>
       </div>

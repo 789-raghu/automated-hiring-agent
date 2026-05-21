@@ -25,6 +25,8 @@
     "noFallthroughCasesInSwitch": true
   },
   "include": [
-    "src"
+    "src",
+    "ui_library/src/components/common/Avatar",
+    "ui_library/src/components/common"
   ]
 }

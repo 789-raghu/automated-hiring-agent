@@ -1,2 +1,2 @@
-export * from './common';
-export * from './hiring';
+export * from '../../ui_library/src/components/common';
+export * from '../../ui_library/src/components/hiring';

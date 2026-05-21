@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useId } from 'react';
 import './Input.css';
 
-export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+export interface InputProps
+  extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   error?: string;
   hint?: string;
@@ -21,7 +22,8 @@ export const Input: React.FC<InputProps> = ({
   className = '',
   ...rest
 }) => {
-  const inputId = id ?? `input-${Math.random().toString(36).slice(2, 7)}`;
+  const generatedId = useId();
+  const inputId = id ?? `input-${generatedId}`;
 
   return (
     <div className={`input-wrapper ${fullWidth ? 'input-wrapper--full' : ''} ${className}`}>
@@ -71,7 +73,8 @@ export const Textarea: React.FC<TextareaProps> = ({
   className = '',
   ...rest
 }) => {
-  const inputId = id ?? `textarea-${Math.random().toString(36).slice(2, 7)}`;
+  const generatedId = useId();
+  const inputId = id ?? `textarea-${generatedId}`;
 
   return (
     <div className={`input-wrapper ${fullWidth ? 'input-wrapper--full' : ''} ${className}`}>

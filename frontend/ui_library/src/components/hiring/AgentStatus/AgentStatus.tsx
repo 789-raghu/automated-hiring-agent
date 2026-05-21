@@ -22,12 +22,12 @@ export interface AgentStatusProps {
 }
 
 const stateConfig: Record<AgentState, { label: string; color: string }> = {
-  idle:      { label: 'Idle',       color: 'var(--text)' },
-  thinking:  { label: 'Thinking…',  color: 'var(--accent)' },
-  screening: { label: 'Screening',  color: '#2563eb' },
-  scoring:   { label: 'Scoring',    color: '#d97706' },
-  done:      { label: 'Complete',   color: '#16a34a' },
-  error:     { label: 'Error',      color: '#dc2626' },
+  idle: { label: 'Idle', color: 'var(--text)' },
+  thinking: { label: 'Thinking…', color: 'var(--accent)' },
+  screening: { label: 'Screening', color: '#2563eb' },
+  scoring: { label: 'Scoring', color: '#d97706' },
+  done: { label: 'Complete', color: '#16a34a' },
+  error: { label: 'Error', color: '#dc2626' },
 };
 
 export const AgentStatus: React.FC<AgentStatusProps> = ({

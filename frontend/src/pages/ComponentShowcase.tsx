@@ -1,27 +1,27 @@
 import React, { useState } from 'react';
 import './ComponentShowcase.css';
 
-import { Button } from '../components/common/Button/Button';
-import { Input, Textarea } from '../components/common/Input/Input';
-import { Badge, StatusBadge } from '../components/common/Badge/Badge';
-import { Avatar, AvatarGroup } from '../components/common/Avatar/Avatar';
-import { Modal } from '../components/common/Modal/Modal';
-import { Spinner } from '../components/common/Spinner/Spinner';
-import { SearchBar } from '../components/common/SearchBar/SearchBar';
-import { Card, CardHeader, CardBody, CardFooter } from '../components/common/Card/Card';
-import { EmptyState } from '../components/common/EmptyState/EmptyState';
-import { Tabs } from '../components/common/Tabs/Tabs';
+import { Button } from '../../ui_library/src/components/common/Button/Button';
+import { Input, Textarea } from '../../ui_library/src/components/common/Input/Input';
+import { Badge, StatusBadge } from '../../ui_library/src/components/common/Badge/Badge';
+import { Avatar, AvatarGroup } from '../../ui_library/src/components/common/Avatar/Avatar';
+import { Modal } from '../../ui_library/src/components/common/Modal/Modal';
+import { Spinner } from '../../ui_library/src/components/common/Spinner/Spinner';
+import { SearchBar } from '../../ui_library/src/components/common/SearchBar/SearchBar';
+import { Card, CardHeader, CardBody, CardFooter } from '../../ui_library/src/components/common/Card/Card';
+import { EmptyState } from '../../ui_library/src/components/common/EmptyState/EmptyState';
+import { Tabs } from '../../ui_library/src/components/common/Tabs/Tabs';
 
-import { JobCard } from '../components/hiring/JobCard/JobCard';
-import { CandidateCard } from '../components/hiring/CandidateCard/CandidateCard';
-import { ApplicationTracker } from '../components/hiring/ApplicationTracker/ApplicationTracker';
-import { AgentStatus } from '../components/hiring/AgentStatus/AgentStatus';
-import { ScoreRing } from '../components/hiring/ScoreRing/ScoreRing';
-import { InterviewCard } from '../components/hiring/InterviewCard/InterviewCard';
+import { JobCard } from '../../ui_library/src/components/hiring/JobCard/JobCard';
+import { CandidateCard } from '../../ui_library/src/components/hiring/CandidateCard/CandidateCard';
+import { ApplicationTracker } from '../../ui_library/src/components/hiring/ApplicationTracker/ApplicationTracker';
+import { AgentStatus } from '../../ui_library/src/components/hiring/AgentStatus/AgentStatus';
+import { ScoreRing } from '../../ui_library/src/components/hiring/ScoreRing/ScoreRing';
+import { InterviewCard } from '../../ui_library/src/components/hiring/InterviewCard/InterviewCard';
 
-import type { ApplicationStatus } from '../components/common/Badge/Badge';
-import type { Tab } from '../components/common/Tabs/Tabs';
-import type { AgentState, AgentLog } from '../components/hiring/AgentStatus/AgentStatus';
+import type { ApplicationStatus } from '../../ui_library/src/components/common/Badge/Badge';
+import type { Tab } from '../../ui_library/src/components/common/Tabs/Tabs';
+import type { AgentState, AgentLog } from '../../ui_library/src/components/hiring/AgentStatus/AgentStatus';
 
 // ─── Shared fixture data ──────────────────────────────────────────────────────
 
@@ -100,11 +100,11 @@ const CANDIDATES = [
 ];
 
 const PIPELINE_STEPS = [
-  { key: 'applied',    label: 'Applied',       description: 'Application received',  completedAt: 'May 10' },
-  { key: 'screening',  label: 'AI Screening',  description: 'Resume parsed & scored', completedAt: 'May 11' },
-  { key: 'interview',  label: 'Interview',     description: '2 rounds scheduled' },
-  { key: 'offer',      label: 'Offer',         description: 'Awaiting decision' },
-  { key: 'hired',      label: 'Hired',         description: 'Onboarding begins' },
+  { key: 'applied', label: 'Applied', description: 'Application received', completedAt: 'May 10' },
+  { key: 'screening', label: 'AI Screening', description: 'Resume parsed & scored', completedAt: 'May 11' },
+  { key: 'interview', label: 'Interview', description: '2 rounds scheduled' },
+  { key: 'offer', label: 'Offer', description: 'Awaiting decision' },
+  { key: 'hired', label: 'Hired', description: 'Onboarding begins' },
 ];
 
 const AGENT_LOGS: AgentLog[] = [
@@ -116,11 +116,11 @@ const AGENT_LOGS: AgentLog[] = [
 ];
 
 const SHOWCASE_TABS: Tab[] = [
-  { key: 'common',      label: 'Common UI' },
-  { key: 'jobs',        label: 'Jobs',        count: 3 },
-  { key: 'candidates',  label: 'Candidates',  count: 3 },
-  { key: 'pipeline',    label: 'Pipeline' },
-  { key: 'agent',       label: 'AI Agent' },
+  { key: 'common', label: 'Common UI' },
+  { key: 'jobs', label: 'Jobs', count: 3 },
+  { key: 'candidates', label: 'Candidates', count: 3 },
+  { key: 'pipeline', label: 'Pipeline' },
+  { key: 'agent', label: 'AI Agent' },
 ];
 
 // ─── Section wrapper ──────────────────────────────────────────────────────────
@@ -139,8 +139,8 @@ const Row: React.FC<{ children: React.ReactNode; wrap?: boolean }> = ({ children
 // ─── Tab panels ───────────────────────────────────────────────────────────────
 
 const CommonTab: React.FC = () => {
-  const [search, setSearch]       = useState('');
-  const [inputVal, setInputVal]   = useState('');
+  const [search, setSearch] = useState('');
+  const [inputVal, setInputVal] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
 
   return (
@@ -177,7 +177,7 @@ const CommonTab: React.FC = () => {
           <Badge variant="info">Info</Badge>
         </Row>
         <Row>
-          {(['new','screening','interview','offer','hired','rejected'] as ApplicationStatus[]).map(s => (
+          {(['new', 'screening', 'interview', 'offer', 'hired', 'rejected'] as ApplicationStatus[]).map(s => (
             <StatusBadge key={s} status={s} />
           ))}
         </Row>
@@ -195,7 +195,7 @@ const CommonTab: React.FC = () => {
       {/* Avatars */}
       <Section title="Avatar & AvatarGroup">
         <Row>
-          {(['xs','sm','md','lg','xl'] as const).map(s => (
+          {(['xs', 'sm', 'md', 'lg', 'xl'] as const).map(s => (
             <Avatar key={s} name="Priya Sharma" size={s} />
           ))}
           <Avatar src="https://i.pravatar.cc/80?img=47" name="Marcus Johnson" size="md" />
@@ -301,13 +301,13 @@ const CommonTab: React.FC = () => {
       <Section title="Tabs">
         <Tabs
           tabs={[
-            { key: 'all',        label: 'All',        count: 42 },
-            { key: 'shortlist',  label: 'Shortlisted', count: 12 },
-            { key: 'interview',  label: 'Interview',   count: 5 },
-            { key: 'rejected',   label: 'Rejected',    count: 8, disabled: false },
+            { key: 'all', label: 'All', count: 42 },
+            { key: 'shortlist', label: 'Shortlisted', count: 12 },
+            { key: 'interview', label: 'Interview', count: 5 },
+            { key: 'rejected', label: 'Rejected', count: 8, disabled: false },
           ]}
           activeKey="shortlist"
-          onChange={() => {}}
+          onChange={() => { }}
         />
       </Section>
 
@@ -406,7 +406,7 @@ const PipelineTab: React.FC = () => (
           duration="45 min"
           interviewers={[
             { name: 'Rahul Mehta', role: 'Hiring Manager' },
-            { name: 'Sara Kim',    role: 'Tech Lead' },
+            { name: 'Sara Kim', role: 'Tech Lead' },
           ]}
           meetLink="https://meet.example.com/abc"
           notes="Focus on system design and component architecture."
@@ -433,7 +433,7 @@ const PipelineTab: React.FC = () => (
 const AgentTab: React.FC = () => {
   const states: AgentState[] = ['idle', 'thinking', 'screening', 'scoring', 'done', 'error'];
   const [agentState, setAgentState] = useState<AgentState>('screening');
-  const [progress, setProgress]     = useState(58);
+  const [progress, setProgress] = useState(58);
 
   return (
     <>
@@ -455,10 +455,10 @@ const AgentTab: React.FC = () => {
             agentState === 'screening'
               ? 'Parsing and scoring resume for Priya Sharma…'
               : agentState === 'scoring'
-              ? 'Ranking candidates against job requirements…'
-              : agentState === 'thinking'
-              ? 'Determining best interview time slots…'
-              : undefined
+                ? 'Ranking candidates against job requirements…'
+                : agentState === 'thinking'
+                  ? 'Determining best interview time slots…'
+                  : undefined
           }
           progress={['screening', 'scoring'].includes(agentState) ? progress : undefined}
           candidatesProcessed={24}
@@ -502,11 +502,11 @@ export const ComponentShowcase: React.FC = () => {
       </div>
 
       <main className="showcase-main">
-        {activeTab === 'common'     && <CommonTab />}
-        {activeTab === 'jobs'       && <JobsTab />}
+        {activeTab === 'common' && <CommonTab />}
+        {activeTab === 'jobs' && <JobsTab />}
         {activeTab === 'candidates' && <CandidatesTab />}
-        {activeTab === 'pipeline'   && <PipelineTab />}
-        {activeTab === 'agent'      && <AgentTab />}
+        {activeTab === 'pipeline' && <PipelineTab />}
+        {activeTab === 'agent' && <AgentTab />}
       </main>
     </div>
   );

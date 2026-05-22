@@ -4,11 +4,14 @@ import cookieParser from "cookie-parser";
 import logger from "morgan";
 
 import indexRouter from "./routes/index";
-import usersRouter from "./routes/users";
+import usersRouter from "./routes/users.routes";
+import { loggerMiddleware } from "./middleware/logger.middleware";
 
 const app = express();
 
 app.use(logger("dev"));
+
+app.use(loggerMiddleware);
 
 app.use(express.json());
 

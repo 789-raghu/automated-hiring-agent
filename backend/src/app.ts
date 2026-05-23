@@ -8,6 +8,7 @@ import usersRouter from "./routes/users.routes";
 import { loggerMiddleware } from "./middleware/logger.middleware";
 
 const app = express();
+const baseUrl = "/api/v1";
 
 app.use(logger("dev"));
 
@@ -21,8 +22,8 @@ app.use(cookieParser());
 
 app.use(express.static(path.join(__dirname, "../public")));
 
-app.use("/", indexRouter);
+app.use(`${baseUrl}/`, indexRouter);
 
-app.use("/users", usersRouter);
+app.use(`${baseUrl}/users`, usersRouter);
 
 export default app;

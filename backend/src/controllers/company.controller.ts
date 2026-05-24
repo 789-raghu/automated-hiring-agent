@@ -1,93 +1,141 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 import { Company } from "../models/company_model";
 import logger from "../config/logger";
+import { parsePagination, buildMeta } from "../utils/pagination";
+import type { AuthRequest, GetCompaniesQuery } from "../@types/request";
+import type { ApiResponse, PaginatedResponse } from "../@types/api_response";
+import type { ICompany } from "../@types/companies";
 
-export const getCompanyById = async (req: Request, res: Response) => {
+export const getCompanyById = async (
+  req: AuthRequest & { params: { id: string } },
+  res: Response<ApiResponse<ICompany>>,
+) => {
   try {
-    const id = req.params.id;
+    const { id } = req.params;
 
-    if (id == undefined) {
-      logger.error(`the id is undefined : ${id}`);
-      return res.status(500).json({
-        success: false,
-        message: "Id is require",
-      });
+    const company = await Company.findById(id).select("-password");
+
+    if (!company) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Company not found" });
     }
 
-    const company = await Company.findOne({ _id: id });
-
-    if (company == undefined) {
-      logger.error(`company not found for the given id : ${id}`);
-      return res.status(404).json({
-        success: false,
-        message: "No company with given Id",
-      });
-    }
-    logger.info("Company fetched successfully");
+    logger.info(`Company fetched: ${id}`);
     return res.status(200).json({
       success: true,
       message: "Company fetched successfully",
       data: company,
     });
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: "Internal server error",
-      error: error,
-    });
+    logger.error(`Error fetching company: ${error}`);
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal server error" });
   }
 };
 
-export const getComapanies = async (req: Request, res: Response) => {
+export const getComapanies = async (
+  req: AuthRequest & { query: GetCompaniesQuery },
+  res: Response<PaginatedResponse<ICompany>>,
+) => {
   try {
-    const companies = await Company.find();
+    const { industry, location, page, limit } = req.query;
+
+    const filter: Record<string, any> = {};
+    if (industry) filter.industry = { $regex: industry, $options: "i" };
+    if (location) filter.location = { $regex: location, $options: "i" };
+
+    const pg = parsePagination(page, limit);
+
+    const [companies, total] = await Promise.all([
+      Company.find(filter)
+        .select("-password")
+        .skip(pg.skip)
+        .limit(pg.limit)
+        .sort({ createdAt: -1 }),
+      Company.countDocuments(filter),
+    ]);
+
     logger.info("Companies fetched successfully");
     return res.status(200).json({
       success: true,
       message: "Companies fetched successfully",
       data: companies,
+      pagination: buildMeta(total, pg),
     });
   } catch (error) {
-    logger.error(error);
+    logger.error(`Error fetching companies: ${error}`);
     return res.status(500).json({
       success: false,
       message: "Internal server error",
-      error: error,
+      data: [],
+      pagination: { total: 0, page: 1, limit: 10, pages: 0 },
     });
   }
 };
 
-export const createCompany = async (req: Request, res: Response) => {
+export const createCompany = async (
+  req: AuthRequest,
+  res: Response<ApiResponse<ICompany>>,
+) => {
   try {
-    const data = req.body;
-    if (data == undefined) {
-      logger.error(`Fill all the required fields : ${data}`);
-      return res.status(500).json({
-        status: false,
-        message: "Fill all the required fields",
-      });
-    }
+    const {
+      companyName,
+      industry,
+      email,
+      password,
+      description,
+      website,
+      location,
+    } = req.body;
 
-    const company = new Company({ ...data });
-    await company.save();
-    logger.info("Company created successfully");
-    return res.status(200).json({
-      status: true,
-      message: "Company created successfully",
-    });
-  } catch (error) {}
-};
-
-export const updateCompany = async (req: Request, res: Response) => {
-  try {
-    const id = req.query.id as string;
-
-    if (!id) {
+    if (!companyName || !industry || !email || !password) {
       return res.status(400).json({
         success: false,
-        message: "Company id is required",
+        message: "companyName, industry, email and password are required",
       });
     }
+
+    const existing = await Company.findOne({ email });
+    if (existing) {
+      return res.status(409).json({
+        success: false,
+        message: "Company with this email already exists",
+      });
+    }
+
+    const company = new Company({
+      companyName,
+      industry,
+      email,
+      password,
+      description,
+      website,
+      location,
+    });
+    await company.save();
+
+    logger.info(`Company created: ${company._id}`);
+    return res.status(201).json({
+      success: true,
+      message: "Company created successfully",
+      data: company,
+    });
+  } catch (error) {
+    logger.error(`Error creating company: ${error}`);
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal server error" });
+  }
+};
+
+export const updateCompany = async (
+  req: AuthRequest & { params: { id: string } },
+  res: Response<ApiResponse<ICompany>>,
+) => {
+  try {
+    const { id } = req.params;
 
     const allowedFields = [
       "companyName",
@@ -96,75 +144,60 @@ export const updateCompany = async (req: Request, res: Response) => {
       "website",
       "location",
     ];
-
     const updateFields: Record<string, any> = {};
-
-    allowedFields.forEach((field) => {
-      if (req.body[field] !== undefined) {
-        updateFields[field] = req.body[field];
-      }
-    });
-
-    const updatedCompany = await Company.findByIdAndUpdate(id, updateFields, {
-      new: true,
-      runValidators: true,
-    });
-
-    if (!updatedCompany) {
-      return res.status(404).json({
-        success: false,
-        message: "Company not found",
-      });
+    for (const field of allowedFields) {
+      if (req.body[field] !== undefined) updateFields[field] = req.body[field];
     }
 
-    logger.info(`Company updated successfully: ${id}`);
+    const updated = await Company.findByIdAndUpdate(
+      id,
+      { $set: updateFields },
+      { new: true, runValidators: true },
+    ).select("-password");
 
+    if (!updated) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Company not found" });
+    }
+
+    logger.info(`Company updated: ${id}`);
     return res.status(200).json({
       success: true,
       message: "Company updated successfully",
-      company: updatedCompany,
+      data: updated,
     });
   } catch (error) {
     logger.error(`Error updating company: ${error}`);
-
-    return res.status(500).json({
-      success: false,
-      message: "Internal server error",
-    });
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal server error" });
   }
 };
 
-export const deleteCompany = async (req: Request, res: Response) => {
+export const deleteCompany = async (
+  req: AuthRequest & { params: { id: string } },
+  res: Response<ApiResponse>,
+) => {
   try {
-    const id = req.query.id as string;
+    const { id } = req.params;
 
-    if (id == undefined) {
-      logger.error(`the id is undefined : ${id}`);
-      return res.status(400).json({
-        success: false,
-        message: "Id is required",
-      });
+    const company = await Company.findByIdAndDelete(id);
+
+    if (!company) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Company not found" });
     }
 
-    const company = await Company.deleteOne({ _id: id });
-
-    if (company.deletedCount == 0) {
-      logger.error(`company not found for the given id : ${id}`);
-      return res.status(404).json({
-        success: false,
-        message: "No company with given Id",
-      });
-    }
-    logger.info("Company deleted successfully");
-    return res.status(200).json({
-      success: true,
-      message: "Company deleted successfully",
-    });
+    logger.info(`Company deleted: ${id}`);
+    return res
+      .status(200)
+      .json({ success: true, message: "Company deleted successfully" });
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: "Internal server error",
-      error: error,
-    });
+    logger.error(`Error deleting company: ${error}`);
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal server error" });
   }
 };

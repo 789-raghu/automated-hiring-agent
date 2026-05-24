@@ -1,6 +1,7 @@
 import mongoose, { Schema } from "mongoose";
 import { IUser } from "../@types/users";
 import { Job } from "./job_models";
+import { UserRole } from "../@types/enums";
 
 const UserSchema = new Schema<IUser>(
   {
@@ -13,7 +14,11 @@ const UserSchema = new Schema<IUser>(
       trim: true,
     },
     password: { type: String, required: true, select: false },
-    role: { type: String, enum: ["candidate", "admin"], default: "candidate" },
+    role: {
+      type: String,
+      enum: Object.values(UserRole),
+      default: UserRole.Candidate,
+    },
     resume: { type: String },
     skills: { type: [String], default: [] },
     experienceYears: { type: Number, default: 0 },

@@ -1,8 +1,9 @@
 import { Document } from "mongoose";
+import { NotificationType } from "./enums";
 
 export interface INotification extends Document {
-    userId: string;
-    type: "application_update" | "interview" | "result";
-    message: string;
-    isRead: boolean;
+  userId:  string;
+  type:    NotificationType;
+  message: string;
+  isRead:  boolean;
 }

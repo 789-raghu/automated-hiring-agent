@@ -1,210 +1,233 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 import logger from "../config/logger";
 import { Application } from "../models/applications_model";
 import { User } from "../models/user_model";
 import { Job } from "../models/job_models";
+import { parsePagination, buildMeta } from "../utils/pagination";
+import { ApplicationStatus } from "../@types/enums";
+import type {
+  AuthRequest,
+  ApplicationByIdParams,
+  GetApplicationsQuery,
+} from "../@types/request";
+import type { ApiResponse, PaginatedResponse } from "../@types/api_response";
+import type { IApplication } from "../@types/applications";
 
-export const getAllApplicationById = async (req: Request, res: Response) => {
+export const getAllApplicationById = async (
+  req: AuthRequest & { params: ApplicationByIdParams },
+  res: Response<ApiResponse<IApplication>>,
+) => {
   try {
-    const applicationId = req.params.applicationId;
+    const { applicationId } = req.params;
 
-    if (applicationId == undefined) {
-      logger.error(`the application id is undefined`);
-      return res.status(400).json({
-        success: false,
-        message: "ApplicationId is required",
-      });
+    const application = await Application.findById(applicationId);
+
+    if (!application) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Application not found" });
     }
 
-    const applications = await Application.find({ _id: applicationId });
-
-    logger.info(`applications fetched successfully ${applications}`);
     return res.status(200).json({
       success: true,
-      message: "Applications fetched successfully",
-      data: applications,
+      message: "Application fetched successfully",
+      data: application,
     });
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: "Internal server error",
-      error: error,
-    });
+    logger.error(`Error fetching application: ${error}`);
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal server error" });
   }
 };
 
-export const getApplicationsByJobId = async (req: Request, res: Response) => {
+export const getApplicationsByJobId = async (
+  req: AuthRequest & { params: { jobId: string }; query: GetApplicationsQuery },
+  res: Response<PaginatedResponse<IApplication>>,
+) => {
   try {
-    const jobId = req.params.jobId;
+    const { jobId } = req.params;
+    const { status, page, limit } = req.query;
 
-    if (jobId == undefined) {
-      return res.status(400).json({
-        success: false,
-        message: "Job Id is required",
-      });
-    }
+    const filter: Record<string, any> = { jobId };
+    if (status) filter.status = status;
 
-    const applications = await Application.find({ jobId });
+    const pg = parsePagination(page, limit);
 
-    logger.info(`applications fetched successfully ${applications}`);
+    const [applications, total] = await Promise.all([
+      Application.find(filter)
+        .skip(pg.skip)
+        .limit(pg.limit)
+        .sort({ appliedOn: -1 }),
+      Application.countDocuments(filter),
+    ]);
+
     return res.status(200).json({
       success: true,
       message: "Applications fetched successfully",
       data: applications,
+      pagination: buildMeta(total, pg),
     });
   } catch (error) {
+    logger.error(`Error fetching applications by job: ${error}`);
     return res.status(500).json({
       success: false,
       message: "Internal server error",
-      error: error,
+      data: [],
+      pagination: { total: 0, page: 1, limit: 10, pages: 0 },
     });
   }
 };
 
 export const getApplicationByEmployeeId = async (
-  req: Request,
-  res: Response,
+  req: AuthRequest & {
+    params: { employeeId: string };
+    query: GetApplicationsQuery;
+  },
+  res: Response<PaginatedResponse<IApplication>>,
 ) => {
   try {
-    const employeeId = req.params.employeeId;
+    const { employeeId } = req.params;
+    const { status, page, limit } = req.query;
 
-    if (employeeId == undefined) {
-      logger.error(`the employee id is undefined`);
-      return res.status(400).json({
-        success: false,
-        message: "EmployeeId is required",
-      });
-    }
+    const filter: Record<string, any> = { userId: employeeId };
+    if (status) filter.status = status;
 
-    const applications = await Application.find({ employeeId });
+    const pg = parsePagination(page, limit);
+
+    const [applications, total] = await Promise.all([
+      Application.find(filter)
+        .skip(pg.skip)
+        .limit(pg.limit)
+        .sort({ appliedOn: -1 }),
+      Application.countDocuments(filter),
+    ]);
 
     return res.status(200).json({
       success: true,
       message: "Applications fetched successfully",
       data: applications,
+      pagination: buildMeta(total, pg),
     });
   } catch (error) {
+    logger.error(`Error fetching applications by employee: ${error}`);
     return res.status(500).json({
       success: false,
       message: "Internal server error",
-      error: error,
+      data: [],
+      pagination: { total: 0, page: 1, limit: 10, pages: 0 },
     });
   }
 };
 
-export const updateApplication = async (req: Request, res: Response) => {
+export const updateApplication = async (
+  req: AuthRequest & {
+    params: ApplicationByIdParams;
+    body: Partial<IApplication>;
+  },
+  res: Response<ApiResponse<IApplication>>,
+) => {
   try {
-    const { applicationId, ...data } = req.body;
+    const { applicationId } = req.params;
 
-    if (applicationId == undefined) {
-      logger.error("the application id is undefined");
-      return res.status(400).json({
-        success: false,
-        message: "ApplicationId is required",
-      });
-    }
-
-    const updatedApplication = await Application.findByIdAndUpdate(
+    const updated = await Application.findByIdAndUpdate(
       applicationId,
-      data,
-      {
-        new: true,
-        runValidators: true,
-      },
+      { $set: req.body },
+      { new: true, runValidators: true },
     );
 
-    logger.info(`application updated successfully ${updatedApplication}`);
+    if (!updated) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Application not found" });
+    }
+
+    logger.info(`Application updated: ${applicationId}`);
     return res.status(200).json({
       success: true,
       message: "Application updated successfully",
-      data: updatedApplication,
+      data: updated,
     });
   } catch (error) {
-    logger.error(`error updating application ${error}`);
-    return res.status(500).json({
-      success: false,
-      message: "Internal server error",
-      error: error,
-    });
+    logger.error(`Error updating application: ${error}`);
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal server error" });
   }
 };
 
-export const deleteApplication = async (req: Request, res: Response) => {
+export const deleteApplication = async (
+  req: AuthRequest & { params: ApplicationByIdParams },
+  res: Response<ApiResponse>,
+) => {
   try {
-    const applicationId = req.params.applicationId;
+    const { applicationId } = req.params;
 
-    if (applicationId == undefined) {
-      logger.error(`the application id is undefined`);
-      return res.status(400).json({
-        success: false,
-        message: "ApplicationId is required",
-      });
+    const application = await Application.findByIdAndDelete(applicationId);
+
+    if (!application) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Application not found" });
     }
 
-    const application = await Application.deleteOne({ _id: applicationId });
-
-    if (application.deletedCount == 0) {
-      logger.error(`application not found for the given id : ${applicationId}`);
-      return res.status(404).json({
-        success: false,
-        message: "No application with given Id",
-      });
-    }
-    logger.info("Application deleted successfully");
-    return res.status(200).json({
-      success: true,
-      message: "Application deleted successfully",
-    });
+    logger.info(`Application deleted: ${applicationId}`);
+    return res
+      .status(200)
+      .json({ success: true, message: "Application deleted successfully" });
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: "Internal server error",
-      error: error,
-    });
+    logger.error(`Error deleting application: ${error}`);
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal server error" });
   }
 };
 
-export const createApplication = async (req: Request, res: Response) => {
+export const createApplication = async (
+  req: AuthRequest & {
+    body: { userId: string; jobId: string; companyId: string };
+  },
+  res: Response<ApiResponse<IApplication>>,
+) => {
   try {
-    const { userId, jobId, ...data } = req.body;
+    const { userId, jobId, companyId } = req.body;
 
-    if (userId == undefined || jobId == undefined) {
-      logger.error("the userId and jobId are undefined");
+    if (!userId || !jobId || !companyId) {
       return res.status(400).json({
         success: false,
-        message: "UserId and JobId are required",
+        message: "userId, jobId and companyId are required",
       });
     }
 
-    const user = User.findOne({ _id: userId });
-    const job = Job.findOne({ _id: jobId });
+    const [user, job] = await Promise.all([
+      User.findById(userId),
+      Job.findById(jobId),
+    ]);
 
-    if (!job || !user) {
-      logger.error("the job or user is undefined");
-      return res.status(400).json({
-        success: false,
-        message: "Job or User is required",
-      });
+    if (!user || !job) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User or job not found" });
     }
 
     const application = await Application.create({
       userId,
       jobId,
-      ...data,
+      companyId,
+      status: ApplicationStatus.Applied,
+      appliedOn: new Date(),
     });
 
-    logger.info(`application created successfully ${application}`);
-    return res.status(200).json({
+    logger.info(`Application created: ${application._id}`);
+    return res.status(201).json({
       success: true,
       message: "Application created successfully",
       data: application,
     });
   } catch (error) {
-    logger.error(`error creating application ${error}`);
-    return res.status(500).json({
-      success: false,
-      message: "Internal server error",
-      error: error,
-    });
+    logger.error(`Error creating application: ${error}`);
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal server error" });
   }
 };
